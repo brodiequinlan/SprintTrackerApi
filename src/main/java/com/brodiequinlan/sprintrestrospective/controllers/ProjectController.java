@@ -30,7 +30,7 @@ public class ProjectController {
             logger.error(ex.getMessage());
         }
 
-
+        sql.close();
         return projects;
     }
 
@@ -40,6 +40,7 @@ public class ProjectController {
         try {
             Project p = new Project(payload.get("name").toString(), payload.get("owner").toString(), null);
             p.setId(sql.addProject(p) + "");
+            sql.close();
             return p;
         } catch (NullPointerException ex) {
             StringBuilder b = new StringBuilder();
@@ -50,6 +51,7 @@ public class ProjectController {
             });
             logger.error("Invalid JSON received: " + b.toString());
         }
+        sql.close();
         return new Project("null", "null", "-2");
     }
 

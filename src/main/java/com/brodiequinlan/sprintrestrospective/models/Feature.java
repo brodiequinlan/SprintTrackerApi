@@ -6,12 +6,10 @@ import java.util.List;
 public class Feature {
     public final String name;
     public final String points;
-    //used in serialization DO NOT MAKE PRIVATE or you'll break the API
-    //NOT unused, used in serialization at the endpoint
+
+    //this CANNOT have weaker access, it is used in serialization and making it private leads to it not being serialized.
     @SuppressWarnings({"WeakerAccess", "unused"})
     public final List<String> users;
-    //NOT unused, used in serialization at the endpoint
-    @SuppressWarnings("unused")
     public String id;
     public String requester;
 

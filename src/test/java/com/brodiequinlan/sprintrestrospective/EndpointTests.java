@@ -8,7 +8,10 @@ import com.brodiequinlan.sprintrestrospective.models.Feature;
 import com.brodiequinlan.sprintrestrospective.models.Login;
 import com.brodiequinlan.sprintrestrospective.models.Project;
 import com.brodiequinlan.sprintrestrospective.models.Token;
-import org.junit.*;
+import org.junit.Assert;
+import org.junit.Assume;
+import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -103,28 +106,26 @@ public class EndpointTests {
     }
 
     @Test
-    public void testLogin()
-    {
+    public void testLogin() {
         LoginController lc = new LoginController();
-        Assert.assertTrue(lc.issue("c","c").token.length() > 0);
+        Assert.assertTrue(lc.issue("c", "c").token.length() > 0);
         Assert.assertNotEquals("INVALID_AUTH", lc.issue("c", "c").token);
-        Assert.assertEquals("INVALID_AUTH", lc.issue("c","c1").token);
+        Assert.assertEquals("INVALID_AUTH", lc.issue("c", "c1").token);
     }
 
     @Test
-    public void testRegister()
-    {
+    public void testRegister() {
         LoginController lc = new LoginController();
         Assert.assertEquals("INVALID_REG", lc.register("c", "c").token);
         Assert.assertNotEquals("INVALID_REG", lc.register("c1", "c").token);
     }
+
     @Test
-    public void testValidate()
-    {
+    public void testValidate() {
         LoginController lc = new LoginController();
-        Token tok = lc.issue("c","c");
-        Assert.assertTrue(lc.validate(tok.token,"c"));
-        Assert.assertFalse(lc.validate(tok.token,"c1"));
-        Assert.assertFalse(lc.validate("dfkll234jf","c"));
+        Token tok = lc.issue("c", "c");
+        Assert.assertTrue(lc.validate(tok.token, "c"));
+        Assert.assertFalse(lc.validate(tok.token, "c1"));
+        Assert.assertFalse(lc.validate("dfkll234jf", "c"));
     }
 }

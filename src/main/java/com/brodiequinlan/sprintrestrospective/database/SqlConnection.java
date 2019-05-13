@@ -7,42 +7,34 @@ import com.brodiequinlan.sprintrestrospective.security.Hash;
 import com.brodiequinlan.sprintrestrospective.security.Salt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 @Component
 public class SqlConnection {
+    public static String pepper;
+    public static String url;
+    public static String username;
+    public static String password;
     private final Logger logger = LoggerFactory.getLogger(SqlConnection.class);
     private Connection con = null;
 
-    public static String pepper;
-
-    public static String url;
-
-    public static String username;
-
-    public static String password;
-
-    public SqlConnection()
-    {
+    public SqlConnection() {
         init();
     }
 
-    public void init()
-    {
+    public void init() {
         try {
             con = DriverManager.getConnection(url, username, password);
         } catch (SQLException ex) {
-            logger.error("Error: "+ex.getMessage());
+            logger.error("Error: " + ex.getMessage());
         }
 
     }
+
     public void close() {
         try {
             if (con != null) con.close();
@@ -69,7 +61,8 @@ public class SqlConnection {
             while (rs.next()) {
                 projects.add(new Project(rs.getString(2), rs.getString(3), rs.getString(1)));
             }
-
+            ps.close();
+            rs.close();
         } catch (SQLException ex) {
             logger.error("Error: " + ex.getMessage());
         }
@@ -85,6 +78,8 @@ public class SqlConnection {
         if (rs.next()) {
             uId = rs.getInt(1);
         }
+        ps.close();
+        rs.close();
         return uId;
     }
 
@@ -105,9 +100,12 @@ public class SqlConnection {
                     ps.setInt(1, pId);
                     ps.setInt(2, oId);
                     ps.executeUpdate();
+                    generatedKeys.close();
                     return pId;
                 }
             }
+            ps.close();
+
         } catch (SQLException ex) {
             logger.error(ex.getMessage());
         }
@@ -122,9 +120,11 @@ public class SqlConnection {
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 if (rs.getString(1).equals(Hash.sha512(password + rs.getString(2) + pepper))) {
+                    stmt.close();
                     return true;
                 }
             }
+            stmt.close();
         } catch (Exception e) {
             System.out.println(e.getLocalizedMessage());
         }
@@ -141,6 +141,8 @@ public class SqlConnection {
             if (rs.next()) {
                 return "Account Already Exists";
             }
+            rs.close();
+            stmt.close();
             String query2 = " insert into Users (name,password,salt) values (?, ?, ?)";
             PreparedStatement preparedStmt = con.prepareStatement(query2);
             String salt = Salt.generateSalt();
@@ -148,6 +150,7 @@ public class SqlConnection {
             preparedStmt.setString(2, Hash.sha512(password + salt + pepper));
             preparedStmt.setString(3, salt);
             preparedStmt.execute();
+            preparedStmt.close();
             return "success";
         } catch (Exception e) {
             logger.error(e.getLocalizedMessage());
@@ -177,6 +180,8 @@ public class SqlConnection {
                 String points = rs.getString(3);
                 String requester = rs.getString(4);
                 features.add(new Feature(id, name, points, requester, users));
+                ps.close();
+                rs.close();
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -209,6 +214,8 @@ public class SqlConnection {
 
             ps = con.prepareStatement(drop_users);
             ps.executeUpdate();
+
+            ps.close();
         } catch (Exception e) {
             logger.error(e.getLocalizedMessage());
         }
@@ -223,6 +230,7 @@ public class SqlConnection {
         try {
             PreparedStatement ps = con.prepareStatement(alterAuto);
             ps.executeUpdate();
+            ps.close();
         } catch (Exception e) {
             logger.error(e.getLocalizedMessage());
         }
@@ -248,12 +256,14 @@ public class SqlConnection {
             ps.setString(3, feature.requester);
             ps.setString(4, projectId);
             ps.executeUpdate();
+
             try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
                     fid = generatedKeys.getString(1);
                     feature.id = fid;
                 }
             }
+            ps.close();
             return feature;
         } catch (SQLException ex) {
             feature.id = "-2";

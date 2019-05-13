@@ -2,17 +2,17 @@ package com.brodiequinlan.sprintrestrospective;
 
 import com.brodiequinlan.sprintrestrospective.database.SqlConnection;
 import com.brodiequinlan.sprintrestrospective.models.Project;
-import org.junit.*;
+import org.junit.Assert;
+import org.junit.Assume;
+import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class DatabaseTests {
-    private static final Logger logger = LoggerFactory.getLogger(DatabaseTests.class);
 
     @Before
     public void setup() {
@@ -48,7 +48,6 @@ public class DatabaseTests {
         SqlConnection sql = new SqlConnection();
         Project proj = new Project("bob2", "c", "void");
         sql.addProject(proj);
-        logger.info(sql.getProjects("c").get(0).name);
         Assert.assertTrue(sql.getProjects("c").size() > 0);
         sql.close();
     }

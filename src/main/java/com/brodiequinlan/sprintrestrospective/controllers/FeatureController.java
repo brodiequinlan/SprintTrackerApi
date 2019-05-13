@@ -21,7 +21,9 @@ public class FeatureController {
     public List<Feature> all(@PathVariable String projectid, @PathVariable String token, @PathVariable String username) {
         SqlConnection sql = new SqlConnection();
         if (Login.validate_token(token, username)) {
-            return sql.getFeatures(projectid);
+            var feats = sql.getFeatures(projectid);
+            sql.close();
+            return feats;
         } else return new ArrayList<>();
     }
 
@@ -30,8 +32,12 @@ public class FeatureController {
         SqlConnection sql = new SqlConnection();
         Feature feature = new Feature("-1", payload.get("name").toString(), payload.get("points").toString(), "-1", new ArrayList<>());
         if (Login.validate_token(payload.get("token").toString(), payload.get("username").toString())) {
-            return sql.addFeature(feature, payload.get("username").toString(), payload.get("project").toString());
-        } else return feature;
+            var s = sql.addFeature(feature, payload.get("username").toString(), payload.get("project").toString());
+            sql.close();
+            return s;
+        }
+        sql.close();
+        return feature;
     }
 
 }

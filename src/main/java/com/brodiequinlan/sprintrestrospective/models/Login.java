@@ -16,8 +16,10 @@ public class Login {
     public static Token login(String username, String password) {
         SqlConnection sql = new SqlConnection();
         if (sql.validateUser(username, password)) {
+            sql.close();
             return new Token(Jwts.builder().setSubject(username).signWith(key).compact(), "successful login");
         } else {
+            sql.close();
             return new Token("INVALID_AUTH", "Incorrect username or password");
         }
 
