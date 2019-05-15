@@ -180,9 +180,10 @@ public class SqlConnection {
                 String points = rs.getString(3);
                 String requester = rs.getString(4);
                 features.add(new Feature(id, name, points, requester, users));
-                ps.close();
-                rs.close();
+
             }
+            ps.close();
+            rs.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
