@@ -33,11 +33,12 @@ public class EndpointTests {
     }
 
     @Test
-    public void testGetProjects() {
+    public void getProjectsTest() {
         SqlConnection sql = new SqlConnection();
         Project project = new Project("test", "c", "-1");
-        int id = sql.addProject(project);
-        Assume.assumeTrue(id > 0);
+        String id = sql.addProject(project);
+        Assume.assumeFalse(id.equals("-1"));
+        Assume.assumeFalse(id.equals("-2"));
         ProjectController pc = new ProjectController();
         String token = Login.login("c", "c").token;
         List<Project> projects = pc.all(token, "c");
@@ -47,7 +48,7 @@ public class EndpointTests {
     }
 
     @Test
-    public void testAddProject() {
+    public void addProjectTest() {
         Map<String, Object> payload = new HashMap<>();
         payload.put("name", "test2");
         payload.put("owner", "c");
@@ -65,11 +66,12 @@ public class EndpointTests {
     }
 
     @Test
-    public void testAddFeature() {
+    public void addFeatureTest() {
         SqlConnection sql = new SqlConnection();
         Project project = new Project("test", "c", "-1");
-        int id = sql.addProject(project);
-        Assume.assumeTrue(id > 0);
+        String id = sql.addProject(project);
+        Assume.assumeFalse(id.equals("-1"));
+        Assume.assumeFalse(id.equals("-2"));
         FeatureController fc = new FeatureController();
         Map<String, Object> payload = new HashMap<>();
         payload.put("name", "test feature");
@@ -77,18 +79,19 @@ public class EndpointTests {
         String token = Login.login("c", "c").token;
         payload.put("token", token);
         payload.put("username", "c");
-        payload.put("project", id + "");
+        payload.put("project", id);
         Feature feature = fc.add(payload);
         Assert.assertNotEquals("-1", feature.id);
         sql.close();
     }
 
     @Test
-    public void testGetFeatures() {
+    public void getFeaturesTest() {
         SqlConnection sql = new SqlConnection();
         Project project = new Project("test", "c", "-1");
-        int id = sql.addProject(project);
-        Assume.assumeTrue(id > 0);
+        String id = sql.addProject(project);
+        Assume.assumeFalse(id.equals("-1"));
+        Assume.assumeFalse(id.equals("-2"));
         FeatureController fc = new FeatureController();
         Map<String, Object> payload = new HashMap<>();
         payload.put("name", "test feature");
@@ -106,7 +109,7 @@ public class EndpointTests {
     }
 
     @Test
-    public void testLogin()
+    public void loginTest()
     {
         LoginController lc = new LoginController();
         Assert.assertTrue(lc.issue("c", "c").token.length() > 0);
@@ -115,7 +118,7 @@ public class EndpointTests {
     }
 
     @Test
-    public void testRegister()
+    public void registerTest()
     {
         LoginController lc = new LoginController();
         Assert.assertEquals("INVALID_REG", lc.register("c", "c").token);
@@ -123,7 +126,7 @@ public class EndpointTests {
     }
 
     @Test
-    public void testValidate()
+    public void validateTest()
     {
         LoginController lc = new LoginController();
         Token tok = lc.issue("c", "c");

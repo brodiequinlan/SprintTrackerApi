@@ -20,4 +20,16 @@ public class Feature {
         this.requester = requester;
         this.users = users;
     }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if(!(o instanceof Feature)) return false;
+
+        Feature other = (Feature)o;
+
+        //all these string compares are probably expensive
+        //maybe we can assume if id is the same everything else is as well, because two different features cannot have the same id
+        return other.requester.equals(requester) && other.id.equals(id) && other.name.equals(name) && other.points.equals(points) && other.users.equals(users);
+    }
 }

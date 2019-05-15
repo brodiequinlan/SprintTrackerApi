@@ -83,7 +83,7 @@ public class SqlConnection {
         return uId;
     }
 
-    public int addProject(Project project) {
+    public String addProject(Project project) {
         try {
             int oId = GetIdFromUsername(project.owner);
 
@@ -101,7 +101,7 @@ public class SqlConnection {
                     ps.setInt(2, oId);
                     ps.executeUpdate();
                     generatedKeys.close();
-                    return pId;
+                    return pId+"";
                 }
             }
             ps.close();
@@ -109,7 +109,7 @@ public class SqlConnection {
         } catch (SQLException ex) {
             logger.error(ex.getMessage());
         }
-        return -1;
+        return "-1";
     }
 
     public boolean validateUser(String username, String password) {
